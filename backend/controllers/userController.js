@@ -24,6 +24,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({ name, email, password: hashedPassword });
 
   if (user) {
+    // token만 있어도 됩니다.! _id,name,email 추가는 자유다.
     res.status(201).json({
       _id: user.id,
       name: user.name,
