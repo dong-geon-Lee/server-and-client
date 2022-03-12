@@ -56,7 +56,7 @@ const Register = () => {
 
       dispatch(register(userData));
 
-      toast.success("Register Success!!");
+      toast.success("Register Success");
     }
   };
 
