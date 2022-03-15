@@ -179,7 +179,7 @@ export const goalSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.goals.map((goal) => {
-          if (goal._id === action.payload.id) {
+          if (goal._id === action.payload._id) {
             goal.text = action.payload.text;
           }
         });
