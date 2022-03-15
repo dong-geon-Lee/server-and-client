@@ -6,8 +6,10 @@ import GoalEdit from "./GoalEdit";
 const GoalItem = ({ goal }) => {
   const dispatch = useDispatch();
 
-  const [newText, setNewText] = useState("");
+  const [text, setText] = useState("");
   const [editState, setEditState] = useState(false);
+
+  const data = { _id: goal._id, text };
 
   return (
     <div className="goal">
@@ -20,19 +22,14 @@ const GoalItem = ({ goal }) => {
 
       {editState ? (
         <>
-          <label htmlFor="newText">Edit</label>
           <input
             type="text"
-            id="newText"
-            onChange={(e) => setNewText(e.target.value)}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
             placeholder="Enter Edit text"
           />
 
-          <button
-            onClick={() => dispatch(editGoal(goal._id, { text: newText }))}
-          >
-            수정하기
-          </button>
+          <button onClick={() => dispatch(editGoal(data))}>수정하기</button>
           <button onClick={() => setEditState(!editState)}>취소하기</button>
         </>
       ) : (

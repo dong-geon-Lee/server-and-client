@@ -99,27 +99,24 @@ export const deleteGoal = createAsyncThunk(
 export const editGoal = createAsyncThunk(
   "goals/edit",
   async (payload, thunkAPI) => {
-    const token = thunkAPI.getState().auth.user.token;
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    const { id, text } = payload;
-
     try {
-      const response = await axios.put(API_URL + `${id}`, text, config);
+      const { _id, text } = payload;
+
+      const token = thunkAPI.getState().auth.user.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const response = await axios.put(API_URL + _id, { bake: text }, config);
+
+      console.log(_id, text, API_URL + `${_id}`, "어떻게?");
 
       return response.data;
     } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      const message = error.response.data.error || error.message;
 
       return thunkAPI.rejectWithValue(message);
     }
@@ -175,9 +172,9 @@ export const goalSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(editGoal.pending, (state) => {
-        state.isLoading = true;
-      })
+      // .addCase(editGoal.pending, (state) => {
+      //   state.isLoading = true;
+      // })
       .addCase(editGoal.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
@@ -186,12 +183,12 @@ export const goalSlice = createSlice({
             goal.text = action.payload.text;
           }
         });
-      })
-      .addCase(editGoal.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
       });
+    // .addCase(editGoal.rejected, (state, action) => {
+    //   state.isLoading = false;
+    //   state.isError = true;
+    //   state.message = action.payload;
+    // });
   },
 });
 
