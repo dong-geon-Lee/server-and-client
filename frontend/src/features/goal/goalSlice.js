@@ -23,8 +23,6 @@ export const createGoal = createAsyncThunk(
         },
       };
 
-      console.log(token);
-
       const response = await axios.post(API_URL, payload, config);
 
       return response.data;
@@ -98,6 +96,36 @@ export const deleteGoal = createAsyncThunk(
   }
 );
 
+export const editGoal = createAsyncThunk(
+  "goals/edit",
+  async (payload, thunkAPI) => {
+    const token = thunkAPI.getState().auth.user.token;
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const { id, text } = payload;
+
+    try {
+      const response = await axios.put(API_URL + `${id}`, text, config);
+
+      return response.data;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const goalSlice = createSlice({
   name: "goal",
   initialState,
@@ -143,6 +171,23 @@ export const goalSlice = createSlice({
         );
       })
       .addCase(deleteGoal.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(editGoal.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(editGoal.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.goals.map((goal) => {
+          if (goal._id === action.payload.id) {
+            goal.text = action.payload.text;
+          }
+        });
+      })
+      .addCase(editGoal.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
