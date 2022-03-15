@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { deleteGoal, editGoal } from "../features/goal/goalSlice";
-import GoalEdit from "./GoalEdit";
 
 const GoalItem = ({ goal }) => {
   const dispatch = useDispatch();
@@ -9,7 +8,7 @@ const GoalItem = ({ goal }) => {
   const [text, setText] = useState("");
   const [editState, setEditState] = useState(false);
 
-  const data = { _id: goal._id, text };
+  const data = { id: goal._id, text };
 
   return (
     <div className="goal">

@@ -100,7 +100,7 @@ export const editGoal = createAsyncThunk(
   "goals/edit",
   async (payload, thunkAPI) => {
     try {
-      const { _id, text } = payload;
+      const { id, text } = payload;
 
       const token = thunkAPI.getState().auth.user.token;
 
@@ -110,13 +110,18 @@ export const editGoal = createAsyncThunk(
         },
       };
 
-      const response = await axios.put(API_URL + _id, { bake: text }, config);
+      const response = await axios.put(API_URL + `${id}`, { text }, config);
 
-      console.log(_id, text, API_URL + `${_id}`, "어떻게?");
+      console.log(id, text, API_URL + `${id}`, "어떻게?");
 
       return response.data;
     } catch (error) {
-      const message = error.response.data.error || error.message;
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
 
       return thunkAPI.rejectWithValue(message);
     }
@@ -172,9 +177,9 @@ export const goalSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      // .addCase(editGoal.pending, (state) => {
-      //   state.isLoading = true;
-      // })
+      .addCase(editGoal.pending, (state) => {
+        state.isLoading = true;
+      })
       .addCase(editGoal.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
@@ -183,12 +188,12 @@ export const goalSlice = createSlice({
             goal.text = action.payload.text;
           }
         });
+      })
+      .addCase(editGoal.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
       });
-    // .addCase(editGoal.rejected, (state, action) => {
-    //   state.isLoading = false;
-    //   state.isError = true;
-    //   state.message = action.payload;
-    // });
   },
 });
 
